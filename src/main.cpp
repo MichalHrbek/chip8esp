@@ -9,6 +9,7 @@
 #define SCREEN_WIDTH	128
 #define SCREEN_HEIGHT	64
 #define PIXEL_SCALE		2
+// How many lines of text can fit on the screen
 #define MAX_LINES		8
 
 #define SPEAKER_PIN		13
