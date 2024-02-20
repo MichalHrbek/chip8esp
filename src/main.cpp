@@ -13,8 +13,14 @@
 
 #define SPEAKER_PIN		13
 
-// Runs very poorly on a single core because drawing to the screen takes a lot of time
-#define THREADED
+// How often should io (drawing to the screen, polling keys, playing sound) be handled
+#define IO_FREQ 60
+
+// How many instructions per second should be attempted
+#define TARGET_FREQ 500
+
+// Uncomment if you want to use two cores
+// #define THREADED
 
 #ifdef THREADED
 TaskHandle_t ioTask;
@@ -25,7 +31,9 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 uint8_t rom[4096];
 size_t rom_size = 0;
 Chip8 *vm;
-int target_frequency = 500; // In Hz
+
+long slowdown = 0;
+ulong last_tick = 0;
 
 const int nRows = 4;
 const int nColumns = 4;
@@ -83,6 +91,7 @@ void io() {
 void ioLoop(void * parameter = NULL) {
 	for(;;) {
 		io();
+		// delayMicroseconds(1000000/IO_FREQ); // 60 Hz
 	}
 }
 
@@ -183,14 +192,19 @@ void setup() {
 void loop() {
 	ulong start = micros();
 #ifndef THREADED
-	io();
+	if (start - last_tick > 1000000/IO_FREQ) { // 60Hz
+		io();
+		last_tick = start;
+	}
 #endif
 	vm->cycle(); // Execute one instruction
 	ulong end = micros();
 	
-	if (end-start < 1000000/target_frequency) {
-		delayMicroseconds((1000000/target_frequency)-(end-start));
+	// Cathing up or slowing down to the target frequency
+	if (end-start < 1000000/TARGET_FREQ) {
+		if (slowdown > 0) slowdown -= (1000000/TARGET_FREQ)-(end-start);
+		else delayMicroseconds((1000000/TARGET_FREQ)-(end-start));
 	} else {
-		// Handling slowdown shouldn't be necessary since no instructions take that much time. Might implement for single core later
+		slowdown += end-start-1000000/TARGET_FREQ;
 	}
 }

@@ -29,8 +29,8 @@ void Chip8::cycle()
 			switch (opcode & 0x00FF)
 			{
 				case 0x00E0: // Clears the screen
-					screen_drawn = true;
 					memset(screen,0,64*32);
+					screen_drawn = true;
 					pc += 2;
 					break;
 
