@@ -43,10 +43,9 @@ class Chip8 {
 		bool screen_drawn = false;
 		bool playing_sound = false;
 		bool screen[64*32] = {};
-		Chip8(uint8_t* rom, size_t rom_size, bool* keypad) {
+		Chip8(uint8_t* rom, size_t rom_size, bool* keys): keys(keys) {
 			memcpy(memory,fontset,80);
 			memcpy(memory+0x200,rom,rom_size);
-			keys = keypad;
 		}
 		void cycle();
 };

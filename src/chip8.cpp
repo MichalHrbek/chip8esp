@@ -181,7 +181,7 @@ void Chip8::cycle()
 
 							uint16_t posPixel = posX + ((posY) * 64);
 
-							if (screen[posPixel] == true) V[0xF] = 1;
+							if (screen[posPixel]) V[0xF] = 1;
 							screen[posPixel] ^= 1;
 							screen_drawn = true;
 						}
