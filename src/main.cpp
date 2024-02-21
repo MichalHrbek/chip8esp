@@ -135,6 +135,13 @@ void setup() {
 	}
 
 	display.println(" 1 - up\n 2 - select\n 3 - down\nPress 1 to start");
+	display.printf("Target frequency: %i\n", TARGET_FREQ);
+	display.printf("Refresh rate: %i\n", IO_FREQ);
+#ifdef THREADED
+	display.println("Running dual core");
+#else
+	display.println("Running single core");
+#endif
 	display.display();
 
 	// Picking a file
